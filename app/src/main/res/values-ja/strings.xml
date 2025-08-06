@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">PermissionSample</string>
+    <string name="req_permission">権限要求</string>
+    <string name="wording_permission">このアプリにはこの権限が必要です。権限を許可してください。\nアプリ終了します。</string>
+    <string name="wording_permission_2times">アプリ終了します。\n2連続、拒否が続いたので再インストールするか、設定 → アプリ → PermissionSampleの権限を許可することで続きができます。</string>
+</resources>
