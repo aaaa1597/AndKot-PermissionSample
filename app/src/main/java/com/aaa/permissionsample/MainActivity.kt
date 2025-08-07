@@ -9,11 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-const val PREFKEY_DENIED_COUNT = "PREFKEY_DENIED_COUNT"
+const val PREFKEY_FIRST_LAUNCH = "PREFKEY_FIRST_LAUNCH"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sharedPref: SharedPreferences
@@ -39,28 +41,41 @@ class MainActivity : AppCompatActivity() {
         /* 複数の権限チェック */
         val permissions = arrayOf(Manifest.permission.POST_NOTIFICATIONS, /*複数時はここに並べる*/)
         /* 未許可権限を取得 */
-        val denidedPermissions: MutableList<String> = ArrayList()
+        val deniedPermissions: MutableList<String> = ArrayList()
         for (permission in permissions) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED)
-                denidedPermissions.add(permission)
+                deniedPermissions.add(permission)
         }
 
         /* 未許可権限チェック */
-        if(denidedPermissions.isEmpty())
-            return
+        if(deniedPermissions.isEmpty())
+            return  /* 権限付与済 何もする必要ない */
+
+        val fstLaunch = sharedPref.getBoolean(PREFKEY_FIRST_LAUNCH, true)
+        if(fstLaunch) {
+            /* 未許可権限があれば許可要求 */
+            permissionLauncher.launch(deniedPermissions.toTypedArray())
+            sharedPref.edit(commit=true) { putBoolean(PREFKEY_FIRST_LAUNCH, false)}
+        }
         else {
-            val cnt = sharedPref.getInt(PREFKEY_DENIED_COUNT, 0)
-            if(cnt < 2)
-                /* 未許可権限があれば許可要求 */
-                permissionLauncher.launch(denidedPermissions.toTypedArray())
-            else {
-                /* 2連続で権限不許可ならアラートダイアログ→Shutdown */
-                val alertDialog = AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.req_permission))
-                    .setMessage(R.string.wording_permission)
-                    .setPositiveButton("OK") {dialog, which -> dialog.dismiss(); finish()}
-                alertDialog.show()
+            val rationaleNeeded = deniedPermissions.any { permission ->
+                ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
             }
+
+            if(rationaleNeeded) {
+                /* 以前に拒否った */
+                permissionLauncher.launch(deniedPermissions.toTypedArray())
+            }
+            else {
+                /* 以前に"非表示にした"ならアラートダイアログ → Shutdown */
+            }
+            /* 2連続で権限不許可ならアラートダイアログ→Shutdown */
+            val alertDialog = AlertDialog.Builder(this)
+                .setTitle(getString(R.string.req_permission))
+                .setMessage(getString(R.string.wording_permission_2times, getString(R.string.app_name)) )
+                .setPositiveButton("OK") {dialog, which -> dialog.dismiss()}
+                .setOnDismissListener { finish() }
+            alertDialog.show()
         }
     }
 
@@ -73,8 +88,9 @@ class MainActivity : AppCompatActivity() {
                 /* ひとつでも権限不足ありならアラートダイアログ→Shutdown */
                 val alertDialog = AlertDialog.Builder(this)
                     .setTitle(getString(R.string.req_permission))
-                    .setMessage(R.string.req_permission)
-                    .setPositiveButton("OK") {dialog, which -> dialog.dismiss(); finish()}
+                    .setMessage(R.string.wording_permission)
+                    .setPositiveButton("OK") {dialog, which -> dialog.dismiss()}
+                    .setOnDismissListener { finish() }
                 alertDialog.show()
             }
     }
