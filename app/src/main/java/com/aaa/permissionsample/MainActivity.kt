@@ -68,14 +68,13 @@ class MainActivity : AppCompatActivity() {
             }
             else {
                 /* 以前に"非表示にした"ならアラートダイアログ → Shutdown */
+                val alertDialog = AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.req_permission))
+                    .setMessage(getString(R.string.wording_permission_2times, getString(R.string.app_name)) )
+                    .setPositiveButton("OK") {dialog, which -> dialog.dismiss()}
+                    .setOnDismissListener { finish() }
+                alertDialog.show()
             }
-            /* 2連続で権限不許可ならアラートダイアログ→Shutdown */
-            val alertDialog = AlertDialog.Builder(this)
-                .setTitle(getString(R.string.req_permission))
-                .setMessage(getString(R.string.wording_permission_2times, getString(R.string.app_name)) )
-                .setPositiveButton("OK") {dialog, which -> dialog.dismiss()}
-                .setOnDismissListener { finish() }
-            alertDialog.show()
         }
     }
 
