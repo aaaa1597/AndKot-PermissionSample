@@ -2,5 +2,5 @@
     <string name="app_name">PermissionSample</string>
     <string name="req_permission">権限要求</string>
     <string name="wording_permission">\nこのアプリにはこの権限が必要なんです。あなたの許可をください。\nアプリ終了します。</string>
-    <string name="wording_permission_2times">\nアプリ終了します。\n今このアプリは\"表示しない\"設定になっていまして。\nアンインストール → 再インストールするか、設定 → アプリ → %1$sの権限を許可してあげて下さい。</string>
+    <string name="wording_permission_2times">\nアプリ終了します。\n今このアプリは\"表示しない\"設定になっていまして。\nアンインストールして、再インストールして下さい。</string>
 </resources>
