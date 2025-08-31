@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                     .setTitle(getString(R.string.req_permission))
                     .setMessage(getString(R.string.wording_permission_2times, getString(R.string.app_name)) )
                     .setPositiveButton("OK") {dialog, which -> dialog.dismiss()}
-                    .setOnDismissListener { finish() }
+                    .setOnDismissListener { window.decorView.postDelayed({finish()}, 500) }
                 alertDialog.show()
             }
         }
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                     .setTitle(getString(R.string.req_permission))
                     .setMessage(R.string.wording_permission)
                     .setPositiveButton("OK") {dialog, which -> dialog.dismiss()}
-                    .setOnDismissListener { finish() }
+                    .setOnDismissListener { window.decorView.postDelayed({finish()}, 500) }
                 alertDialog.show()
             }
     }
