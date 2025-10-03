@@ -73,17 +73,23 @@ class PermissionsFragment : Fragment() {
         else {
             Log.d("aaaaa", "registerForActivityResult 73")
             /* ひとつでも権限不足ありならアラートダイアログ→Shutdown */
-            PermissionDialogFragment.show(requireActivity(), R.string.wording_permission)
+            PermissionDialogFragment.show(requireActivity())
         }
     }
 }
 
-class PermissionDialogFragment(@StringRes private val redid: Int) : DialogFragment() {
+class PermissionDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val activity = requireActivity()
+
+
+        val msgstr = activity.getString(R.string.wording_permission) +
+                REQUIRED_PERMISSIONS.joinToString(separator = ",\n") +
+                activity.getString(R.string.wording_permission2)
+
         return AlertDialog.Builder(activity)
             .setTitle(activity.getString(R.string.req_permission))
-            .setMessage(activity.getString(redid, activity.getString(R.string.app_name)))
+            .setMessage(msgstr)
             .setPositiveButton("OK") { _, _ ->
                 activity.finish()
             }
@@ -96,8 +102,8 @@ class PermissionDialogFragment(@StringRes private val redid: Int) : DialogFragme
     }
 
     companion object {
-        fun show(activity: FragmentActivity, @StringRes redid: Int) {
-            val fragment = PermissionDialogFragment(redid)
+        fun show(activity: FragmentActivity) {
+            val fragment = PermissionDialogFragment()
             fragment.show(activity.supportFragmentManager, "PermissionDialog")
         }
     }
